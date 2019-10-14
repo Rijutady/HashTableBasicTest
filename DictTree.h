@@ -45,7 +45,7 @@ DictTree<KeyType, ItemType>::DictTree()
 template <class KeyType, class ItemType>
 void DictTree<KeyType, ItemType>::add(KeyType newKey, ItemType newItem)
 {
-    /
+
     
     TreeNode<KeyType, ItemType>* currNode = root;
 
@@ -62,7 +62,7 @@ void DictTree<KeyType, ItemType>::add(KeyType newKey, ItemType newItem)
         numNodes = 1;
         return;
     }
-    / Use containedInSubtree to determine if a node with newKey exists
+    //Use containedInSubtree to determine if a node with newKey exists
     // If it does, use setValue to set the value to newKey and newItem and return.
     TreeNode<KeyType, ItemType>* n = containedInSubtree(currNode, newKey);
     if (n != nullptr){
@@ -113,11 +113,8 @@ bool DictTree<KeyType, ItemType>::remove(KeyType key)
 
 template<class KeyType, class ItemType>
 TreeNode<KeyType, ItemType>* DictTree<KeyType, ItemType>::removeFromSubtree(TreeNode<KeyType, ItemType>* subTree, KeyType key, bool& success)
-==
+{
     // Refer to previous implementation nodes
-if
-else
-eif
 
     return nullptr;
 }

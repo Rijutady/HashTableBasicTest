@@ -36,12 +36,21 @@ HashTable<KeyType, ItemType>::HashTable()
     numElems = 0;
 
     // for each bucket, set the i-th bucket equal to a new DictTree of type <KeyType, ItemType>
+    for (int i=0; i<DEFAULT_BUCKET_NUM; i++) {
+        buckets[i]= new DictTree<KeyType, ItemType>*[DEFAULT_BUCKET_NUM];
+    }
 }
 
 template<class KeyType, class ItemType>
 HashTable<KeyType, ItemType>::HashTable(int numBucks)
 {
     // See previous constructor.  Use numBucks instead of DEFAULT_BUCKET_NUM.
+    buckets = new DictTree<KeyType, ItemType>*[numBucks];
+    numBuckets = numBucks;
+    numElems = 0;
+    for (int i=0; i<DEFAULT_BUCKET_NUM; i++) {
+    buckets[i]= new DictTree<KeyType, ItemType>*[numBucks];
+    }
 }
 
 template<class KeyType, class ItemType>
@@ -55,11 +64,20 @@ void HashTable<KeyType, ItemType>::add(KeyType key, ItemType item)
 {
     // VERY LITTLE CODE HERE
     // Get the hash bucket Index
+    int b = getHashIndex(key);
+   
 
     // If the hash table does not already contain key
-    //    increase numElems by one
     
-    // add key,item to the DictTree at a buckets index
+        if (!buckets[b]->contains(key)) {
+            //    increase numElems by one
+            numElems = numElems+ 1;
+            // add key,item to the DictTree at a buckets index
+            buckets[b]->add(key,item);
+        }
+       
+    
+    
 }
 
 template<class KeyType, class ItemType>
@@ -67,32 +85,52 @@ bool HashTable<KeyType, ItemType>::remove(KeyType key)
 {
     // VERY LITTLE CODE HERE
     // Get the hash Index
+    int b = getHashIndex(key);
 
     // If the hash table contains the key
-    //    decrease numElems by one
-    //    remove the key from buckets[b]
-    //    return true
+    if (buckets[b]->contains(key)) {
+        //    decrease numElems by one
+        numElems=numElems-1;
+         //    remove the key from buckets[b]
+        buckets[b]->remove(key);
+         //    return true
+        return true;
+    }
     // else
-    //    return false
-
-    return false;
+        //    return false
+    else
+        return false;
+    
 }
+   
+    
 
 template<class KeyType, class ItemType>
 ItemType HashTable<KeyType, ItemType>::getItem(KeyType key)
 {
     // Get the hash bucket Index
+    int b = getHashIndex(key);
+    if (buckets[b]->contains(key)) {
     // return the item by using getItem on the correct bucket index.
-    // (HINT:  Should only be 2 line of code at most.  1 is plenty.)
+        return buckets[b]->getItem(key);
+    }
+    else
+    return nullptr; // (HINT:  Should only be 2 line of code at most.  1 is plenty.)
 }
 
 template<class KeyType, class ItemType>
 bool HashTable<KeyType, ItemType>::contains(KeyType key)
 {
     // Get the hash bucket Index
+    int b = getHashIndex(key);
+    if (buckets[b]->contains(key)) {
+    // return the item by using getItem on the correct bucket index.
+        return true;
+    }
     // Use contains on the correct bucket index to return the correct true false.
     // (HINT:  Should only be 2 lines of code at most.  1 is plenty.)
-    return false;
+    else
+        return false;
 }
 
 template<class KeyType, class ItemType>
@@ -116,5 +154,11 @@ int HashTable<KeyType, ItemType>::getHashIndex(const KeyType & key)
 template<class KeyType, class ItemType>
 void HashTable<KeyType, ItemType>::traverse(void visit(ItemType&))
 {
+    
     // You should use the traverse function of the DictTree
+    for (int i=0; i<DEFAULT_BUCKET_NUM; i++) {
+    buckets[i]= new DictTree<KeyType, ItemType>*[DEFAULT_BUCKET_NUM];
+    
+    buckets->traverse(visit,buckets[i]);
+    }
 }

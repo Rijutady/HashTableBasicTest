@@ -21,12 +21,13 @@ private:
     TreeNode<KeyType, ItemType>* removeNode(TreeNode<KeyType, ItemType>* node);
     TreeNode<KeyType, ItemType>* removeLeftmostNode(TreeNode<KeyType, ItemType>* node, TreeNode<KeyType, ItemType>* successor);
     TreeNode<KeyType, ItemType>* containedInSubtree(TreeNode<KeyType, ItemType>* subTree, KeyType key);
+    void RemoveHelper(TreeNode<KeyType, ItemType>* subTree, KeyType key);
     void preorder(void visit(ItemType&), TreeNode<KeyType, ItemType>* treePtr) const;
     int numNodes;
 public:
     DictTree();
     void add(KeyType newKey, ItemType newItem);
-    bool remove(KeyType newKeys);
+    void remove(KeyType newKeys);
     bool contains(KeyType key);
     ItemType getItem(KeyType key);
     int size();
@@ -98,25 +99,80 @@ void DictTree<KeyType, ItemType>::add(KeyType newKey, ItemType newItem)
 }
 
 template <class KeyType, class ItemType>
-bool DictTree<KeyType, ItemType>::remove(KeyType key)
+void DictTree<KeyType, ItemType>::remove(KeyType key)
 {
-    // This method is done.
-    bool isSuccessful = false;
-
-    root = removeFromSubtree(root, key, isSuccessful);
-
-    if (isSuccessful)
-        numNodes--;
-
-    return isSuccessful;
+     RemoveHelper(root, key);
+    
+   
 }
 
 template<class KeyType, class ItemType>
-TreeNode<KeyType, ItemType>* DictTree<KeyType, ItemType>::removeFromSubtree(TreeNode<KeyType, ItemType>* subTree, KeyType key, bool& success)
+void DictTree<KeyType, ItemType>::RemoveHelper(TreeNode<KeyType, ItemType>* subTree, KeyType key)
 {
     // Refer to previous implementation nodes
-
-    return nullptr;
+    TreeNode<KeyType, ItemType>*par=nullptr;
+    TreeNode<KeyType, ItemType>*cur=subTree;
+    while (cur) {
+        if (key==cur->key) {
+            //Case 1) Node is a leaf - it is deleted
+            if (!cur->left && !cur->right) {
+                if (!par) {
+                    subTree = removeNode(subTree);
+                }
+                else if (par->left==cur){
+                    par->left=removeNode(subTree);
+                }
+                else
+                    par->right=removeNode(subTree);
+                numNodes--;
+            }
+            //Case 2) Node has one child (left/right) - parent adopts child
+            else if(!cur->left && cur->right)
+            {
+                if (!par) {
+                    subTree=cur->right;
+                }
+                else if (par->left==cur)
+                    par->left=cur->right;
+                else
+                    par->right=cur->right;
+                numNodes--;
+            }
+            else if (cur->left && !cur->right)
+            {
+                if(!par)
+                    subTree=cur->left;
+                else if(par->left==cur)
+                    par->left=cur->left;
+                else
+                    par->right=cur->left;
+                numNodes--;
+            }
+            else
+            {
+            TreeNode<KeyType,ItemType>*successor=cur->right;// On the right branch...
+                while (successor->left)// travel as left as possible
+                {
+                    successor = successor->left;
+                }
+                KeyType sucKey = successor->key;
+                ItemType sucItem = successor->item;// Remember the value of the successor
+                RemoveHelper(subTree,sucKey);    // Remove the successor node
+                cur->key = sucKey;
+                cur->item= sucItem;// Copy the value of the successor node back// Refer to previous implementation nodes
+            }
+            return;
+        }
+        else if (key<cur->key)
+        {
+            par=cur;
+            cur=cur->left;
+        }
+        else{
+            par=cur;
+            cur=cur->right;
+        }
+    }
 }
 
 /*
@@ -128,13 +184,15 @@ template<class KeyType, class ItemType>
 TreeNode<KeyType, ItemType>* DictTree<KeyType, ItemType>::removeNode(TreeNode<KeyType, ItemType>* node)
 {
     // Refer to previous implementation nodes
+    
     return nullptr;
 }
 
 template<class KeyType, class ItemType>
 TreeNode<KeyType, ItemType>* DictTree<KeyType, ItemType>::removeLeftmostNode(TreeNode<KeyType, ItemType>* node, TreeNode<KeyType, ItemType>* successor)
 {
-    // Refer to previous implementation nodes
+    
+    
     return nullptr;
 }
 
@@ -143,15 +201,17 @@ ItemType DictTree<KeyType, ItemType>::getItem(KeyType key)
 {
     // Use containedInSubtree to find the "item" of the node with the "key"
     // This should be a single line of code.
-    return nullptr;
+    TreeNode<KeyType, ItemType>*n=containedInSubtree(root,key);
+    return ItemType (n->item);
+    //return nullptr;
 }
 
 template <class KeyType, class ItemType>
 bool DictTree<KeyType, ItemType>::contains(KeyType key)
 {
     // Use containedInSubtree to see if a node with the "key" is null.
-
-    return false;
+    return containedInSubtree(root,key);
+    //return false;
 }
 
 template <class KeyType, class ItemType>
@@ -163,28 +223,25 @@ TreeNode<KeyType, ItemType>* DictTree<KeyType, ItemType>::containedInSubtree(Tre
         return nullptr;
     }
     // If the subtree key is equal to key, then return the subtree
-    while (subTree)
-        {
-            if (key==subTree->key)
-            {
-                return subTree;
-            }
-
+    //while (subTree)
+        //{
+    else if (key==subTree->key)
+    {
+        return subTree;
+    }
             // If the key is less than the subTree key
             //   see if the key is contained in the left subtree
-            if (key < subTree->key)
-            {
-                subTree = subTree->left;
-            }
+    else if (key < subTree->key)
+    {
+        return containedInSubtree(subTree->left,key);
+                //subTree = subTree->left;
+    }
             // else
                 //   see if the key is contained in the right subtree
-            else
-            {
-                subTree = subTree->right;
-            }
-                
-
-        }
+    else
+    {
+        return containedInSubtree(subTree->right,key);
+    }
 
     return nullptr;
 }
@@ -210,8 +267,9 @@ void DictTree<KeyType, ItemType>::preorder(void visit(ItemType&), TreeNode<KeyTy
     if (treePtr == nullptr)
         return;
 
-    preorder( visit, treePtr->left);
     visit(treePtr->item);
+    preorder( visit, treePtr->left);
     preorder(visit, treePtr->right);
+    
 }
 

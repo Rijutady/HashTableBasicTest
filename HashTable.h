@@ -2,6 +2,7 @@
 
 #include "DictTree.h"
 #include<string>
+#include<iostream>
 #include<unordered_map>
 using namespace std;
 
@@ -32,13 +33,14 @@ template<class KeyType, class ItemType>
 HashTable<KeyType, ItemType>::HashTable()
 {
     buckets = new DictTree<KeyType, ItemType>*[DEFAULT_BUCKET_NUM];
+    
     numBuckets = DEFAULT_BUCKET_NUM;
     numElems = 0;
 
     // for each bucket, set the i-th bucket equal to a new DictTree of type <KeyType, ItemType>
     for (int i=0; i<DEFAULT_BUCKET_NUM; i++) {
-        buckets[i]= new DictTree<KeyType, ItemType>*[DEFAULT_BUCKET_NUM];
-    }
+        buckets[i]=new DictTree<KeyType, ItemType>();
+        }
 }
 
 template<class KeyType, class ItemType>
@@ -48,8 +50,8 @@ HashTable<KeyType, ItemType>::HashTable(int numBucks)
     buckets = new DictTree<KeyType, ItemType>*[numBucks];
     numBuckets = numBucks;
     numElems = 0;
-    for (int i=0; i<DEFAULT_BUCKET_NUM; i++) {
-    buckets[i]= new DictTree<KeyType, ItemType>*[numBucks];
+    for (int i=0; i<numBucks; i++) {
+    buckets[i]= *new DictTree<KeyType, ItemType>();
     }
 }
 
@@ -65,12 +67,13 @@ void HashTable<KeyType, ItemType>::add(KeyType key, ItemType item)
     // VERY LITTLE CODE HERE
     // Get the hash bucket Index
     int b = getHashIndex(key);
-   
-
     // If the hash table does not already contain key
     
-        if (!buckets[b]->contains(key)) {
+        
+        if(!buckets[b]->contains(key))
+        {
             //    increase numElems by one
+            
             numElems = numElems+ 1;
             // add key,item to the DictTree at a buckets index
             buckets[b]->add(key,item);
@@ -110,11 +113,11 @@ ItemType HashTable<KeyType, ItemType>::getItem(KeyType key)
 {
     // Get the hash bucket Index
     int b = getHashIndex(key);
-    if (buckets[b]->contains(key)) {
+    //if (buckets[b]->contains(key)) {
     // return the item by using getItem on the correct bucket index.
         return buckets[b]->getItem(key);
-    }
-    else
+    //}
+    //else
     return nullptr; // (HINT:  Should only be 2 line of code at most.  1 is plenty.)
 }
 
@@ -123,13 +126,14 @@ bool HashTable<KeyType, ItemType>::contains(KeyType key)
 {
     // Get the hash bucket Index
     int b = getHashIndex(key);
-    if (buckets[b]->contains(key)) {
-    // return the item by using getItem on the correct bucket index.
-        return true;
-    }
     // Use contains on the correct bucket index to return the correct true false.
     // (HINT:  Should only be 2 lines of code at most.  1 is plenty.)
-    else
+    if (buckets[b]->contains(key)) {
+    
+        return true;
+    }
+    
+    //else
         return false;
 }
 
@@ -156,9 +160,7 @@ void HashTable<KeyType, ItemType>::traverse(void visit(ItemType&))
 {
     
     // You should use the traverse function of the DictTree
-    for (int i=0; i<DEFAULT_BUCKET_NUM; i++) {
-    buckets[i]= new DictTree<KeyType, ItemType>*[DEFAULT_BUCKET_NUM];
-    
-    buckets->traverse(visit,buckets[i]);
+    for (int i=0; i<numBuckets; i++) {
+    buckets[i]->traverse(visit);
     }
 }

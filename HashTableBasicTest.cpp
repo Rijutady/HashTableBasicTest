@@ -115,12 +115,12 @@ int main()
 {
     cout << "Testing DictTree" << endl << endl;
     DictTree<int, string>* tree1 = new DictTree<int, string>();
-//    cout << "-----------------------------------------" << endl;
-//    cout << "Testing HashTree" << endl << endl;
-//    HashTable<int, string>* dict1 = new HashTable<int, string>();
+    cout << "-----------------------------------------" << endl;
+    cout << "Testing HashTree" << endl << endl;
+    HashTable<int, string>* dict1 = new HashTable<int, string>();
 
     TreeTest1(tree1);
-//    HashTest1(dict1);
+    HashTest1(dict1);
 
     return 0;
 }

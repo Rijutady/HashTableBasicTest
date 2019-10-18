@@ -1,6 +1,7 @@
 #pragma once
+#include<iostream>
 
-//using namespace std;
+using namespace std;
 
 template <class KeyType, class ItemType>
 struct TreeNode
@@ -32,6 +33,7 @@ public:
     ItemType getItem(KeyType key);
     int size();
     void traverse(void visit(ItemType&)) const;
+    bool isNull();
 };
 
 
@@ -39,21 +41,23 @@ template <class KeyType, class ItemType>
 DictTree<KeyType, ItemType>::DictTree()
 {
     // Set up the root and the initial number of nodes to 0
-    root = 0;
+    root = nullptr;
     numNodes = 0;
 }
 
 template <class KeyType, class ItemType>
 void DictTree<KeyType, ItemType>::add(KeyType newKey, ItemType newItem)
 {
-
+    
     
     TreeNode<KeyType, ItemType>* currNode = root;
 
 
     // If the root hasn't been set up, make a new node with newKey, newItem
     // and set equal to this new node and return.
+    
     if (root==nullptr) {
+       
         TreeNode<KeyType, ItemType>* newNode = new TreeNode<KeyType, ItemType>;
         newNode->key= newKey;
         newNode->item = newItem;
@@ -205,44 +209,56 @@ ItemType DictTree<KeyType, ItemType>::getItem(KeyType key)
     return ItemType (n->item);
     //return nullptr;
 }
-
+template<class KeyType, class ItemType>
+bool DictTree<KeyType, ItemType>:: isNull()
+{
+    if(root==nullptr)
+        return true;
+    else
+        return false;
+}
 template <class KeyType, class ItemType>
 bool DictTree<KeyType, ItemType>::contains(KeyType key)
 {
+    
     // Use containedInSubtree to see if a node with the "key" is null.
+    if(root==nullptr)
+    {
+        return false;
+    }
+    
     return containedInSubtree(root,key);
-    //return false;
-}
-
+    
+     }
 template <class KeyType, class ItemType>
 TreeNode<KeyType, ItemType>* DictTree<KeyType, ItemType>::containedInSubtree(TreeNode<KeyType, ItemType>* subTree, KeyType key)
 {
+    //cout<<"RooOT";
     // If the subtree is nullptr, then return nullptr
-    if (subTree==nullptr)
+    while(subTree)
     {
-        return nullptr;
-    }
+    
     // If the subtree key is equal to key, then return the subtree
     //while (subTree)
         //{
-    else if (key==subTree->key)
+        if (key==subTree->key)
     {
         return subTree;
     }
             // If the key is less than the subTree key
             //   see if the key is contained in the left subtree
-    else if (key < subTree->key)
+        else if (key < subTree->key)
     {
         return containedInSubtree(subTree->left,key);
                 //subTree = subTree->left;
     }
             // else
                 //   see if the key is contained in the right subtree
-    else
+        else
     {
         return containedInSubtree(subTree->right,key);
     }
-
+    }
     return nullptr;
 }
 

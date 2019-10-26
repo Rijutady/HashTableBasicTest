@@ -3,86 +3,65 @@ void DictTree<KeyType, ItemType>::RemoveHelper(TreeNode<KeyType, ItemType>* subT
 {
 	TreeNode<KeyType, ItemType>* par = nullptr;
 	TreeNode<KeyType, ItemType>* cur = subTree;
-
-	while (cur)
-	{
-		if (key = cur->key)
-		{
-			if (!cur->left && !cur->right)
-			{
-				if (!par)
-				{
-					subTree = nullptr;
+	while (cur) {
+		if (key == cur->key) {
+			//Case 1) Node is a leaf - it is deleted
+			if (!cur->left && !cur->right) {
+				if (!par) {
+					subTree = removeNode(subTree);
 				}
-				else if (par->left==cur)
-				{
-					par->left = nullptr;
+				else if (par->left == cur) {
+					par->left = removeNode(subTree);
 				}
 				else
-				{
-					par->right = nullptr;
-				}
+					par->right = removeNode(subTree);
 				numNodes--;
 			}
-			else if (cur->left && !cur->right)
-				{
-				if (!par)
-				{
-					subTree = cur->left;
-				}
-				else if (par->left==cur)
-				{
-					par->left = cur->left;
-				}
-				else
-				{
-					par->right = cur->left;
-				}
-				numNodes--;
-				}
+			//Case 2) Node has one child (left/right) - parent adopts child
 			else if (!cur->left && cur->right)
-				{
-				if (!par)
-				{
+			{
+				if (!par) {
 					subTree = cur->right;
 				}
 				else if (par->left == cur)
-				{
 					par->left = cur->right;
-				}
 				else
-				{
 					par->right = cur->right;
-				}
 				numNodes--;
-
-				}
+			}
+			else if (cur->left && !cur->right)
+			{
+				if (!par)
+					subTree = cur->left;
+				else if (par->left == cur)
+					par->left = cur->left;
+				else
+					par->right = cur->left;
+				numNodes--;
+			}
 			else
 			{
-				TreeNode<KeyType, ItemType>* suc = cur->right;
-				while (suc->left)
+				TreeNode<KeyType, ItemType>* successor = cur->right;// On the right branch...
+				while (successor->left)// travel as left as possible
 				{
-					suc = suc->left;
+					successor = successor->left;
 				}
-				KeyType sucKey = suc->key;
-				ItemType sucItem = suc->item;
-				RemoveHelper(subTree, sucKey);
+				KeyType sucKey = successor->key;
+				ItemType sucItem = successor->item;// Remember the value of the successor
+				RemoveHelper(subTree, sucKey);    // Remove the successor node
 				cur->key = sucKey;
-				cur->item = sucItem;
+				cur->item = sucItem;// Copy the value of the successor node back// Refer to previous implementation nodes
 			}
 			return;
-
-				
 		}
 		else if (key < cur->key)
 		{
 			par = cur;
 			cur = cur->left;
 		}
-		else
-		{
+		else {
 			par = cur;
 			cur = cur->right;
 		}
-
 	}
+}

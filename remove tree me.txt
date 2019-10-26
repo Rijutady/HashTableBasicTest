@@ -1,0 +1,88 @@
+template<class KeyType, class ItemType>
+void DictTree<KeyType, ItemType>::RemoveHelper(TreeNode<KeyType, ItemType>* subTree, KeyType key)
+{
+	TreeNode<KeyType, ItemType>* par = nullptr;
+	TreeNode<KeyType, ItemType>* cur = subTree;
+
+	while (cur)
+	{
+		if (key = cur->key)
+		{
+			if (!cur->left && !cur->right)
+			{
+				if (!par)
+				{
+					subTree = nullptr;
+				}
+				else if (par->left==cur)
+				{
+					par->left = nullptr;
+				}
+				else
+				{
+					par->right = nullptr;
+				}
+				numNodes--;
+			}
+			else if (cur->left && !cur->right)
+				{
+				if (!par)
+				{
+					subTree = cur->left;
+				}
+				else if (par->left==cur)
+				{
+					par->left = cur->left;
+				}
+				else
+				{
+					par->right = cur->left;
+				}
+				numNodes--;
+				}
+			else if (!cur->left && cur->right)
+				{
+				if (!par)
+				{
+					subTree = cur->right;
+				}
+				else if (par->left == cur)
+				{
+					par->left = cur->right;
+				}
+				else
+				{
+					par->right = cur->right;
+				}
+				numNodes--;
+
+				}
+			else
+			{
+				TreeNode<KeyType, ItemType>* suc = cur->right;
+				while (suc->left)
+				{
+					suc = suc->left;
+				}
+				KeyType sucKey = suc->key;
+				ItemType sucItem = suc->item;
+				RemoveHelper(subTree, sucKey);
+				cur->key = sucKey;
+				cur->item = sucItem;
+			}
+			return;
+
+				
+		}
+		else if (key < cur->key)
+		{
+			par = cur;
+			cur = cur->left;
+		}
+		else
+		{
+			par = cur;
+			cur = cur->right;
+		}
+
+	}
